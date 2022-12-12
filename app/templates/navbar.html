@@ -1,0 +1,33 @@
+<nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-lights">
+        <a class="navbar-brand" href="/" style="color:aliceblue"><strong>POKEGO!</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="/your_pokemon" style="color:aliceblue">Summon</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/posts" style="color:aliceblue">Feed</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout" style="color:aliceblue">Logout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" style="color:aliceblue">(Welcome, Master {{ current_user.first_name.title() }})</a>
+            </li>
+            {% else %}
+            <li>
+              <a class="nav-link" href="/signup" style="color:aliceblue">Signup</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login" style="color:aliceblue">Login</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+</nav>

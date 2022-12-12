@@ -1,0 +1,16 @@
+.main-background{
+    background: url("https://i.ytimg.com/vi/1roy4o4tqQM/maxresdefault.jpg") no-repeat center fixed;
+    background-size: cover
+
+}
+
+.login-buttons{
+    display: flex;
+    justify-content: center;
+
+}
+
+.btn{
+    margin: 10px;
+}
+
