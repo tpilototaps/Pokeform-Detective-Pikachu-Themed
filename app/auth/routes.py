@@ -193,7 +193,7 @@ def form():
                     to_include = final_display[5]['charizard'],final_display[-1].title()
                     return render_template('your_pokestats.html', pokestats=to_include)
                 else:
-                    return 'The pokemon you summoned is not yet available. Please refresh the page and try again.'
+                    return 'The pokemon you summoned is not yet available. Please refresh the page and choose either ditto, pikachu, garchomp, snorlax, charizard, or squirtle.'
 
             return pokemon_attributes(working_dict)
             # api code end   
