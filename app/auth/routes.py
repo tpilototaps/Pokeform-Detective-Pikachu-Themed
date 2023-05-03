@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user
 from app.auth.forms import CreateUser, Login, PokemonSummons
 import requests
@@ -31,7 +31,7 @@ def signup():
 @auth.route('/login', methods=['GET', 'POST'])
 def signin():
     user_login = Login()
-    if request.method =="POST":
+    if request.method == "POST":
         if user_login.validate():
             email = user_login.email_address.data
             password = user_login.password.data
@@ -45,9 +45,9 @@ def signin():
                     print('Logged in')
                     login_user(user)
                 else:
-                    print('Incorrect password')
+                    return 'YOUR PASSWORD IS INCORRECT, CLICK \'BACK\' ON YOUR BROWSER AND TRY AGAIN'
             else:
-                print('user doesnt exist')
+                return 'YOUR EMAIL ADDRESS IS INCORRECT, CLICK \'BACK\' ON YOUR BROWSER AND TRY AGAIN'
             return redirect(url_for('poke_blueprint.view_posts')) 
     return render_template('login.html', user_login=user_login)
 
@@ -57,30 +57,21 @@ def form():
     if request.method == 'POST':
         if pokeform.validate():
             pokename = pokeform.pokename.data
-            usable_pokename = str(pokename)
+            usable_pokename = str(pokename.lower())
+
             # api code below
 
-            ditto = requests.get('https://pokeapi.co/api/v2/pokemon/ditto')
-            pikachu = requests.get('https://pokeapi.co/api/v2/pokemon/pikachu')
-            snorlax = requests.get('https://pokeapi.co/api/v2/pokemon/snorlax')
-            garchomp = requests.get('https://pokeapi.co/api/v2/pokemon/garchomp')
-            squirtle = requests.get('https://pokeapi.co/api/v2/pokemon/squirtle')
-            charizard = requests.get('https://pokeapi.co/api/v2/pokemon/charizard')
+            pokepool = requests.get('https://pokeapi.co/api/v2/pokemon/' + usable_pokename)
 
             # Below is the dictionary I will loop through in my fuction for each pokemon only using the values of the dictionary to do so:
 
             working_dict = {
-                'ditto' : ditto.json(),
-                'pikachu' : pikachu.json(),
-                'snorlax' : snorlax.json(),
-                'garchomp' : garchomp.json(),
-                'squirtle' : squirtle.json(),
-                'charizard' : charizard.json()
+                'pokepool': pokepool.json(),
             }
 
             def pokemon_attributes(your_dict):
-                if usable_pokename.lower() == 'ditto':
-                    name = 'ditto'
+                if usable_pokename:
+                    name = usable_pokename
                     final_display = []
                     for value in your_dict.values():
                         pokemon_dict = {}
@@ -88,112 +79,17 @@ def form():
                         pokemon_dict[pokemon_name] = {
                             'Ability' : value['abilities'][0]['ability']['name'],
                             'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
+                            'Sprite' : value['sprites']['other']['dream_world']['front_default'],
                             'Attack base_stat' : value['stats'][1]['base_stat'],
                             'hp base_stat' : value['stats'][0]['base_stat'],
                             'Defense base_stat': value['stats'][2]['base_stat']
                         }
                         final_display.append(pokemon_dict)
                     final_display.append(name)
-                    to_include = final_display[0]['ditto'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-
-                elif usable_pokename.lower() == 'pikachu':
-                    name = 'pikachu'
-                    final_display = []
-                    for value in your_dict.values():
-                        pokemon_dict = {}
-                        pokemon_name = value['forms'][0]['name']
-                        pokemon_dict[pokemon_name] = {
-                            'Ability' : value['abilities'][0]['ability']['name'],
-                            'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
-                            'Attack base_stat' : value['stats'][1]['base_stat'],
-                            'hp base_stat' : value['stats'][0]['base_stat'],
-                            'Defense base_stat': value['stats'][2]['base_stat']
-                        }
-                        final_display.append(pokemon_dict)
-                    final_display.append(name)
-                    to_include = final_display[1]['pikachu'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-
-                elif usable_pokename.lower() == 'snorlax':
-                    name = 'snorlax'
-                    final_display = []
-                    for value in your_dict.values():
-                        pokemon_dict = {}
-                        pokemon_name = value['forms'][0]['name']
-                        pokemon_dict[pokemon_name] = {
-                            'Ability' : value['abilities'][0]['ability']['name'],
-                            'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
-                            'Attack base_stat' : value['stats'][1]['base_stat'],
-                            'hp base_stat' : value['stats'][0]['base_stat'],
-                            'Defense base_stat': value['stats'][2]['base_stat']
-                        }
-                        final_display.append(pokemon_dict)
-                    final_display.append(name)
-                    to_include = final_display[2]['snorlax'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-
-                elif usable_pokename.lower() == 'garchomp':
-                    name = 'garchomp'
-                    final_display = []
-                    for value in your_dict.values():
-                        pokemon_dict = {}
-                        pokemon_name = value['forms'][0]['name']
-                        pokemon_dict[pokemon_name] = {
-                            'Ability' : value['abilities'][0]['ability']['name'],
-                            'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
-                            'Attack base_stat' : value['stats'][1]['base_stat'],
-                            'hp base_stat' : value['stats'][0]['base_stat'],
-                            'Defense base_stat': value['stats'][2]['base_stat']
-                        }
-                        final_display.append(pokemon_dict)
-                    final_display.append(name)
-                    to_include = final_display[3]['garchomp'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-
-                elif usable_pokename.lower() == 'squirtle':
-                    name = "squirtle"
-                    final_display = []
-                    for value in your_dict.values():
-                        pokemon_dict = {}
-                        pokemon_name = value['forms'][0]['name']
-                        pokemon_dict[pokemon_name] = {
-                            'Ability' : value['abilities'][0]['ability']['name'],
-                            'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
-                            'Attack base_stat' : value['stats'][1]['base_stat'],
-                            'hp base_stat' : value['stats'][0]['base_stat'],
-                            'Defense base_stat': value['stats'][2]['base_stat']
-                        }
-                        final_display.append(pokemon_dict)
-                    final_display.append(name)
-                    to_include = final_display[4]['squirtle'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-                    
-                elif usable_pokename.lower() == 'charizard':
-                    name = 'Charizard'
-                    final_display = []
-                    for value in your_dict.values():
-                        pokemon_dict = {}
-                        pokemon_name = value['forms'][0]['name']
-                        pokemon_dict[pokemon_name] = {
-                            'Ability' : value['abilities'][0]['ability']['name'],
-                            'Base_experience' : value['base_experience'],
-                            'Sprite' : value['sprites']['front_shiny'],
-                            'Attack base_stat' : value['stats'][1]['base_stat'],
-                            'hp base_stat' : value['stats'][0]['base_stat'],
-                            'Defense base_stat': value['stats'][2]['base_stat']
-                        }
-                        final_display.append(pokemon_dict)
-                    final_display.append(name)
-                    to_include = final_display[5]['charizard'],final_display[-1].title()
-                    return render_template('your_pokestats.html', pokestats=to_include)
-                else:
-                    return 'The pokemon you summoned is not yet available. Please refresh the page and choose either ditto, pikachu, garchomp, snorlax, charizard, or squirtle.'
+                    to_include = final_display[0][usable_pokename],final_display[-1].title()
+                    return render_template('your_pokestats.html', pokestats=to_include)         
+                
+                return 'The pokemon you summoned is not yet available..'
 
             return pokemon_attributes(working_dict)
             # api code end   
